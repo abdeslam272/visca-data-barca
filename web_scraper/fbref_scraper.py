@@ -1,24 +1,26 @@
-import requests
 from bs4 import BeautifulSoup
-import pandas as pd
+import requests
 
-URL = "https://fbref.com/en/squads/206d90db/Barcelona-Stats"
+def load_data(url):
+    """
+    Load data from a given URL using BeautifulSoup.
 
-def fetch_barca_squad():
-    response = requests.get(URL)
-    soup = BeautifulSoup(response.text, 'html.parser')
+    Parameters:
+    - url (str): The URL to fetch data from.
 
-    # Exemple : récupérer le tableau des stats des joueurs
-    table = soup.find("table", {"id": "stats_standard_24"})
-    df = pd.read_html(str(table))[0]
+    Returns:
+    - soup (BeautifulSoup): Parsed HTML content.
+    """
+    # Send a GET request to the URL
+    response = requests.get(url)
 
-    # Nettoyage basique
-    df = df[df["Rk"] != "Rk"]  # supprimer les lignes de header répétées
-    df.reset_index(drop=True, inplace=True)
+    # Parse the HTML content of the page using BeautifulSoup
+    soup = BeautifulSoup(response.text, "html.parser")
 
-    return df
+    return soup
 
-if __name__ == "__main__":
-    df = fetch_barca_squad()
-    print(df.head())
-    df.to_csv("../data/raw/barca_players_stats.csv", index=False)
+fbref_scraper = "https://fbref.com/en/squads/206d90db/Barcelona-Stats"
+
+soup = load_data(fbref_scraper)
+
+print(soup.prettify()[:1000])
