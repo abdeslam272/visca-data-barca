@@ -4,11 +4,11 @@ Pour avoir nos données à traiter on va utiliser ce site : https://fbref.com/en
 # Les commandes:
 construire l'mage docker:
 
-'''bash
+```bash
 docker build -t barca-scraper ./web_scraper
-'''
+```
 
 Exécuter les conteneurs :
-'''bash
+```bash
 docker run --rm -v $(pwd)/data:/data barca-scraper
-'''
+```
