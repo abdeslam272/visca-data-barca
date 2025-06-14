@@ -1,16 +1,10 @@
+import json
+import re
 from bs4 import BeautifulSoup
 import requests
+import pandas as pd
 
 def load_data(url):
-    """
-    Load data from a given URL using BeautifulSoup.
-
-    Parameters:
-    - url (str): The URL to fetch data from.
-
-    Returns:
-    - soup (BeautifulSoup): Parsed HTML content.
-    """
     # Send a GET request to the URL
     response = requests.get(url)
 
@@ -19,8 +13,36 @@ def load_data(url):
 
     return soup
 
-fbref_scraper = "https://fbref.com/en/squads/206d90db/Barcelona-Stats"
+def extract_and_load_data(script_element, data_type):
+    if script_element:
+        # Extract the JSON data using a regular expression
+        script_text = script_element.text
+        match = re.search(f"var {data_type}\s+=\s+JSON\.parse\('(.+?)'\)",script_text)
 
-soup = load_data(fbref_scraper)
+        if match:
+            json_data_encoded = match.group(1)
+
+            try: 
+                # Decode the encoded JSON data
+                json_data = json.loads(json_data_encoded.encode('utf').decode('unicode_escape'))
+
+                # Create a dataframe from the JSON data
+                df_data = pd.DataFrame(json_data)
+
+                print(f"Successfully loaded {data_type} data into DataFrame.")
+                return df_data
+            except Exception as e:
+                print(f"Error decoding JSON data: {str(e)}")
+                return None
+        else:
+            print(f"JSON data not found in the {data_type} script.")
+            return None
+    else:
+        print(f"{data_type} scrpit element not found on the page.")
+        return None
+
+url_2024 = "https://understat.com/team/Barcelona/2024"
+
+soup = load_data(url_2024)
 
 print(soup.prettify()[:1000])
