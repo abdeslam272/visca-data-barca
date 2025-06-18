@@ -43,6 +43,10 @@ def extract_and_load_data(script_element, data_type):
 
 url_2024 = "https://understat.com/team/Barcelona/2024"
 
-soup = load_data(url_2024)
+# Load the data for 2024 into the dataframes
+soup_2024 = load_data(url_2024)
+df_games_data_2024 = extract_and_load_data(soup_2024.find("script", string=re.compile(r"var datesData\s+=\s+JSON\.parse\(")), "datesData")
+df_statistics_data_2024 = extract_and_load_data(soup_2024.find("script", string=re.compile(r"var statisticsData\s+=\s+JSON\.parse\(")), "statisticsData")
+df_players_data_2024 = extract_and_load_data(soup_2024.find("script", string=re.compile(r"var playersData\s+=\s+JSON\.parse\(")), "playersData")
 
-print(soup.prettify()[:1000])
+print(df_games_data_2024)
