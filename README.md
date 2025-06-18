@@ -12,3 +12,11 @@ Exécuter les conteneurs :
 ```bash
 docker run --rm -v $(pwd)/data:/data barca-scraper
 ```
+
+# Structure de dossier Web_Scraper
+| Fichier       | Rôle                                                               |
+| ------------- | ------------------------------------------------------------------ |
+| `__init__.py` | Rend le dossier `web_scraper` importable comme un module           |
+| `scraper.py`  | Contient la logique principale pour charger et scraper les données |
+| `utils.py`    | Contient les fonctions auxiliaires (comme `extract_and_load_data`) |
+| `config.py`   | Gère les constantes (headers, URLs, noms de colonnes, etc.)        |
