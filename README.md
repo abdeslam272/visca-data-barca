@@ -81,6 +81,7 @@ mkdir -p data
 
 
 # Structure de projet recommandée
+```
 visca-data-barca/
 ├── README.md
 ├── docker-compose.yml
@@ -106,3 +107,4 @@ visca-data-barca/
 │   └── warehouse/
 └── utils/
     └── helpers.py
+```
