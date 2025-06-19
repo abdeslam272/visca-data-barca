@@ -77,3 +77,32 @@ mkdir -p data
 |                        | `psql`, `mysql`             | Accéder base données SQL en CLI                                                         | `psql -U user dbname`                |
 |                        | `az`, `aws` CLI             | Interagir avec Azure/AWS                                                               | `az login`                         |
 |                        | `tar`, `zip`, `unzip`       | Compression/décompression fichiers                                                     | `tar -czvf archive.tar.gz data/`    |
+
+
+
+# Structure de projet recommandée
+visca-data-barca/
+├── README.md
+├── docker-compose.yml
+├── airflow/
+│   ├── dags/
+│   ├── plugins/
+│   └── Dockerfile
+├── dbt/
+│   ├── visca-data-barca/
+│   │   ├── models/
+│   │   └── ...
+│   ├── profiles.yml
+│   └── Dockerfile
+├── streamlit/
+│   ├── app.py
+│   └── Dockerfile
+├── web_scraper/
+│   ├── scraper.py
+│   └── requirements.txt
+├── data/
+│   ├── raw/
+│   ├── staging/
+│   └── warehouse/
+└── utils/
+    └── helpers.py
