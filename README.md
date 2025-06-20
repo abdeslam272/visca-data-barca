@@ -108,3 +108,6 @@ visca-data-barca/
 └── utils/
     └── helpers.py
 ```
+
+
+on utilise dbt (Data Build Tool) est devenu un standard dans l’industrie pour la transformation, nettoyage et modélisation de données en SQL, principalement dans les architectures modernes orientées ELT (Extract, Load, Transform).
