@@ -1,0 +1,44 @@
+services:
+  postgres-dbt:
+    image: postgres:14
+    container_name: barca-postgres-dbt
+    restart: always
+    environment:
+      POSTGRES_USER: dbt-barca
+      POSTGRES_PASSWORD: dbt-barca
+      POSTGRES_DB: dbt-barca_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./data:/data  # tu montes tes CSV ici pour ingestion
+
+  #pgadmin for postgres-dbt
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres-dbt
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
+  dbt:
+    build: 
+      context: .
+      dockerfile: Dockerfile.dbt
+    container_name: barca-dbt
+    volumes:
+      - ./dbt:/usr/app
+    working_dir: /usr/app
+    depends_on:
+      - postgres-dbt
+    entrypoint: [ "tail", "-f", "/dev/null" ]  # pour laisser le conteneur tourner
+
+volumes:
+  pgdata:
+  pgadmin_data:
