@@ -111,3 +111,16 @@ visca-data-barca/
 
 
 on utilise dbt (Data Build Tool) est devenu un standard dans l’industrie pour la transformation, nettoyage et modélisation de données en SQL, principalement dans les architectures modernes orientées ELT (Extract, Load, Transform).
+
+
+un terminal interactif dans le conteneur :
+
+```bash
+docker exec -it barca-dbt bash
+```
+
+Initialiser le projet dbt :
+
+```bash
+dbt init barca_project
+```
