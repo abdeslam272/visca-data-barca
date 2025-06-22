@@ -1,7 +1,8 @@
 FROM python:3.10-slim-buster
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends
+    && apt-get install -y --no-install-recommends \
+    git
 
 WORKDIR /usr/app/dbt
 

@@ -1,0 +1,66 @@
+
+
+============================== 2025-06-22 13:43:09.785796 | 9b2f547a-63b0-4637-bf59-50145b07f5d7 ==============================
+[0m13:43:09.785813 [info ] [MainThread]: Running with dbt=1.3.1
+[0m13:43:09.786817 [debug] [MainThread]: running dbt with arguments {'write_json': True, 'use_colors': True, 'printer_width': 80, 'version_check': True, 'partial_parse': True, 'static_parser': True, 'profiles_dir': '/root/.dbt', 'send_anonymous_usage_stats': True, 'event_buffer_size': 100000, 'quiet': False, 'no_print': False, 'project_name': 'barca_project', 'skip_profile_setup': False, 'which': 'init', 'indirect_selection': 'eager'}
+[0m13:43:09.788843 [debug] [MainThread]: Tracking: tracking
+[0m13:43:09.793592 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7f1b9b7bd720>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7f1b9b7bd360>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7f1b9b7bd4b0>]}
+[0m13:43:09.795190 [info ] [MainThread]: Creating dbt configuration folder at /root/.dbt
+[0m13:43:09.804294 [debug] [MainThread]: Starter project path: /usr/local/lib/python3.10/site-packages/dbt/include/starter_project
+[0m13:43:20.174866 [info ] [MainThread]: Profile barca_project written to /root/.dbt/profiles.yml using target's sample configuration. Once updated, you'll be able to start developing with dbt.
+[0m13:43:20.177055 [info ] [MainThread]: 
+Your new dbt project "barca_project" was created!
+
+For more information on how to configure the profiles.yml file,
+please consult the dbt documentation here:
+
+  https://docs.getdbt.com/docs/configure-your-profile
+
+One more thing:
+
+Need help? Don't hesitate to reach out to us via GitHub issues or on Slack:
+
+  https://community.getdbt.com/
+
+Happy modeling!
+
+[0m13:43:20.179208 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7f1b9b948550>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7f1b9b949d80>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7f1b9b949fc0>]}
+[0m13:43:20.181304 [debug] [MainThread]: Flushing usage events
+
+
+============================== 2025-06-22 13:53:58.821027 | bda20766-ffd9-4d1e-ae85-c97c1e7c73b7 ==============================
+[0m13:53:58.821038 [info ] [MainThread]: Running with dbt=1.3.1
+[0m13:53:58.821718 [debug] [MainThread]: running dbt with arguments {'write_json': True, 'use_colors': True, 'printer_width': 80, 'version_check': True, 'partial_parse': True, 'static_parser': True, 'profiles_dir': '/usr/app', 'send_anonymous_usage_stats': True, 'event_buffer_size': 100000, 'quiet': False, 'no_print': False, 'config_dir': False, 'which': 'debug', 'indirect_selection': 'eager'}
+[0m13:53:58.822856 [debug] [MainThread]: Tracking: tracking
+[0m13:53:58.825854 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7fcf188659c0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7fcf18866380>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7fcf18867010>]}
+[0m13:53:58.874710 [debug] [MainThread]: Executing "git --help"
+[0m13:53:58.888542 [debug] [MainThread]: Acquiring new postgres connection "debug"
+[0m13:53:58.889926 [debug] [MainThread]: Using postgres connection "debug"
+[0m13:53:58.891140 [debug] [MainThread]: On debug: select 1 as id
+[0m13:53:58.892272 [debug] [MainThread]: Opening a new connection, currently in state init
+[0m13:53:58.915618 [debug] [MainThread]: SQL status: SELECT 1 in 0.02 seconds
+[0m13:53:58.918703 [debug] [MainThread]: On debug: Close
+[0m13:53:58.920397 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7fcf1871b5e0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7fcf1871ae90>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7fcf1871b4f0>]}
+[0m13:53:58.921702 [debug] [MainThread]: Flushing usage events
+[0m13:53:59.785098 [debug] [MainThread]: Connection 'debug' was properly closed.
+
+
+============================== 2025-06-22 14:01:10.981677 | 672ffac5-1898-4cb8-b35f-4559bc6bb823 ==============================
+[0m14:01:10.981686 [info ] [MainThread]: Running with dbt=1.3.1
+[0m14:01:10.982542 [debug] [MainThread]: running dbt with arguments {'write_json': True, 'use_colors': True, 'printer_width': 80, 'version_check': True, 'partial_parse': True, 'static_parser': True, 'profiles_dir': '/root/.dbt', 'send_anonymous_usage_stats': True, 'event_buffer_size': 100000, 'quiet': False, 'no_print': False, 'project_name': 'barca_project', 'skip_profile_setup': False, 'which': 'init', 'indirect_selection': 'eager'}
+[0m14:01:10.984032 [debug] [MainThread]: Tracking: tracking
+[0m14:01:10.986441 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7f5d789f68f0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7f5d789f6cb0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7f5d789f6b60>]}
+[0m14:01:10.987452 [info ] [MainThread]: Creating dbt configuration folder at /root/.dbt
+[0m14:01:10.990578 [info ] [MainThread]: A project called barca_project already exists here.
+[0m14:01:10.991705 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7f5d789f6fe0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7f5d789f6f20>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7f5d789f6ce0>]}
+[0m14:01:10.994207 [debug] [MainThread]: Flushing usage events
+
+
+============================== 2025-06-22 14:01:22.677687 | 660b2ef8-d431-43fa-9f74-90133c536084 ==============================
+[0m14:01:22.677701 [info ] [MainThread]: Running with dbt=1.3.1
+[0m14:01:22.679884 [debug] [MainThread]: running dbt with arguments {'write_json': True, 'use_colors': True, 'printer_width': 80, 'version_check': True, 'partial_parse': True, 'static_parser': True, 'profiles_dir': '/root/.dbt', 'send_anonymous_usage_stats': True, 'event_buffer_size': 100000, 'quiet': False, 'no_print': False, 'config_dir': False, 'which': 'debug', 'indirect_selection': 'eager'}
+[0m14:01:22.681878 [debug] [MainThread]: Tracking: tracking
+[0m14:01:22.685450 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7f02d1b58940>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7f02d1b585e0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7f02d1b586a0>]}
+[0m14:01:22.687946 [debug] [MainThread]: Executing "git --help"
+[0m14:01:22.690968 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7f02d1b585e0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7f02d1b58220>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7f02d1b58460>]}
+[0m14:01:22.692428 [debug] [MainThread]: Flushing usage events
