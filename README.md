@@ -124,3 +124,9 @@ Initialiser le projet dbt :
 ```bash
 dbt init barca_project
 ```
+
+Creer le fichier profiles.yml et aprés ca on teste la conexion avec 
+
+```bash
+dbt debug
+```
