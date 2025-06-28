@@ -33,7 +33,8 @@ services:
       dockerfile: Dockerfile.dbt
     container_name: barca-dbt
     volumes:
-      - ./dbt:/usr/app
+      - ./dbt/barca_project:/usr/app           # Le dossier du projet dbt
+      - ./dbt/profiles.yml:/root/.dbt/profiles.yml  # Fichier de connexion à la BDD
     working_dir: /usr/app
     depends_on:
       - postgres-dbt
