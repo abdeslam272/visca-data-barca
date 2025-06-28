@@ -130,3 +130,60 @@ Creer le fichier profiles.yml et aprés ca on teste la conexion avec
 ```bash
 dbt debug
 ```
+
+
+📦 Structure propre d’un projet dbt avec Docker
+Lorsque tu travailles avec Docker + dbt, il est essentiel de monter correctement deux éléments dans le conteneur :
+
+🔧 Le fichier profiles.yml : pour la configuration de connexion à la base de données.
+
+📁 Le dossier barca_project : qui contient ton projet dbt (models, seeds, snapshots, etc.).
+
+🧠 Règle importante : montage ciblé
+Dans le docker-compose.yml, on ne monte que ce qui est nécessaire :
+
+
+```yaml
+volumes:
+  - ./dbt/barca_project:/usr/app                     # 📁 Contenu du projet dbt
+  - ./dbt/profiles.yml:/root/.dbt/profiles.yml       # 🔐 Configuration de la connexion BDD
+```
+
+Cela permet à dbt de trouver :
+
+/usr/app/dbt_project.yml → le cœur du projet
+
+/root/.dbt/profiles.yml → la connexion à la base
+
+📁 Rôle des fichiers dbt
+Fichier / Dossier	Rôle
+dbt_project.yml	Fichier principal du projet dbt (nom, modèles, configurations, etc.)
+models/, seeds/, etc.	Contiennent tes transformations, données sources, snapshots, etc.
+profiles.yml	Définit comment dbt se connecte à la base de données (type, host, user...)
+
+✅ Exemple d’arborescence
+
+```bash
+├── dbt/
+│   ├── profiles.yml                  👈 Fichier de config de la connexion (monté dans /root/.dbt/)
+│   └── barca_project/               👈 Projet dbt (monté dans /usr/app/)
+│       ├── dbt_project.yml
+│       ├── models/
+│       ├── seeds/
+│       └── ...
+```
+🎯 Résultat
+En lançant :
+
+```bash
+docker exec -it barca-dbt bash
+cd /usr/app
+dbt debug
+```
+Tu obtiens :
+
+```pgsql
+profiles.yml file [OK found and valid]
+dbt_project.yml file [OK found and valid]
+```
+Et tu es prêt à exécuter tes commandes dbt run, dbt seed, dbt test, etc. 💪
