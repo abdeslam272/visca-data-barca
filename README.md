@@ -187,3 +187,11 @@ profiles.yml file [OK found and valid]
 dbt_project.yml file [OK found and valid]
 ```
 Et tu es prêt à exécuter tes commandes dbt run, dbt seed, dbt test, etc. 💪
+
+
+# Différence entre ref() et source():
+| Fonction   | Utilisation                                                                             | Ce que ça pointe                                            | Exemple                               |
+| ---------- | --------------------------------------------------------------------------------------- | ----------------------------------------------------------- | ------------------------------------- |
+| `ref()`    | Faire référence à un **modèle dbt** (ou à une table seedée avec `dbt seed`)             | Une table **créée ou gérée par dbt**                        | `{{ ref('players_2024') }}`           |
+| `source()` | Faire référence à une **table brute externe**, souvent dans le schéma `raw` ou `public` | Une table **externe à dbt** (souvent existante dans ta BDD) | `{{ source('raw', 'players_2024') }}` |
+
