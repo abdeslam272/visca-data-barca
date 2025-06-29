@@ -195,3 +195,12 @@ Et tu es prêt à exécuter tes commandes dbt run, dbt seed, dbt test, etc. 💪
 | `ref()`    | Faire référence à un **modèle dbt** (ou à une table seedée avec `dbt seed`)             | Une table **créée ou gérée par dbt**                        | `{{ ref('players_2024') }}`           |
 | `source()` | Faire référence à une **table brute externe**, souvent dans le schéma `raw` ou `public` | Une table **externe à dbt** (souvent existante dans ta BDD) | `{{ source('raw', 'players_2024') }}` |
 
+# Pourquoi utiliser seeds/ + ref() est mieux ?
+| Avantage             | Explication                                                                                  |
+| -------------------- | -------------------------------------------------------------------------------------------- |
+|  **Versionnable**  | Les fichiers `.csv` dans `seeds/` sont trackés par Git.                                      |
+|  **Reproductible** | Tu peux recréer toute ta base avec `dbt seed` et `dbt run`, sans avoir besoin de re-scraper. |
+|  **Intégré à dbt**  | Tu peux chaîner des transformations avec `ref()` entre seeds et modèles.                     |
+|  **Stable**        | Pas besoin de connexion externe ou dépendance à un script de scraping pour tester le projet. |
+
+
