@@ -246,3 +246,14 @@ fct_player_season_stats.sql
 fct_matches.sql
 
 dim_team.sql
+
+# Effeicney Metrics :
+Let’s say a player:
+
+Passes → Passes → Key pass → Shot → Goal
+
+If the xG of the shot is 0.5, then:
+
+All players involved in that sequence get +0.5 in xGChain
+
+Only those who didn't make the key pass or shoot get +0.5 in xGBuildup
