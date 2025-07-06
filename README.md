@@ -208,3 +208,41 @@ Et tu es prêt à exécuter tes commandes dbt run, dbt seed, dbt test, etc. 💪
 dbt run --select match_results
 ```
 
+#  Structure des modèles dbt
+1. raw (source déclarée dans sources.yml)
+Contient les fichiers de données bruts (CSV, fichiers plats, base externe). Ces données ne sont pas modifiées. Exemple : games_2024.csv, players_2024.csv.
+
+➡️ But : référencer les sources de données avec source() (pas de logique ici).
+
+2. staging (modèles stg_)
+Modèles intermédiaires pour :
+
+Renommer les colonnes (snake_case),
+
+Caster les types (ex : JSON → table),
+
+Nettoyer les valeurs (ex : dates, strings, valeurs manquantes).
+
+➡️ But : créer une base propre et uniforme pour tous les modèles métiers.
+
+Exemple :
+stg_players_2024.sql extrait et nettoie les données du fichier players_2024.csv.
+
+3. marts (modèles métiers/finals)
+Contient les modèles finaux utilisés pour la visualisation, reporting ou analyse. On distingue généralement :
+
+marts/fact/ → tables de faits (indicateurs, mesures),
+
+marts/dim/ → tables de dimensions (joueurs, équipes),
+
+marts/stats/ → KPIs dérivés ou résumés statistiques.
+
+➡️ But : produire les jeux de données métier prêts à être utilisés dans Streamlit, Power BI ou autres.
+
+Exemples :
+
+fct_player_season_stats.sql
+
+fct_matches.sql
+
+dim_team.sql
