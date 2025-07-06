@@ -203,4 +203,8 @@ Et tu es prêt à exécuter tes commandes dbt run, dbt seed, dbt test, etc. 💪
 |  **Intégré à dbt**  | Tu peux chaîner des transformations avec `ref()` entre seeds et modèles.                     |
 |  **Stable**        | Pas besoin de connexion externe ou dépendance à un script de scraping pour tester le projet. |
 
+# Run dbt Modeles
+```bash
+dbt run --select match_results
+```
 
