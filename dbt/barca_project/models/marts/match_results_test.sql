@@ -16,7 +16,8 @@ WITH raw_games AS (
         result
 
     FROM {{ ref('games_2024') }}
-)
+), 
+exploded AS (
     SELECT 
         id,
         side,
@@ -75,4 +76,18 @@ WITH raw_games AS (
             WHEN side = 'a' THEN xg_json->>'h'
         END AS XG_made_By_opponent
 
-FROM raw_games
+FROM raw_games) 
+
+SELECT 
+        datetime,
+        away_team,
+        home_team,
+        match_type,
+        Oppenent_team,
+        Points,
+        Goals_Scored_By_Barcelona,
+        Goals_Scored_By_opponent,
+        XG_made_By_Barcelona,
+        XG_made_By_opponent
+
+FROM exploded
