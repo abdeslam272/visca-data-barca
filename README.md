@@ -257,3 +257,13 @@ If the xG of the shot is 0.5, then:
 All players involved in that sequence get +0.5 in xGChain
 
 Only those who didn't make the key pass or shoot get +0.5 in xGBuildup
+
+| Type de métrique         | Exemples                                          |
+| ------------------------ | ------------------------------------------------- |
+| Normalisées (per 90)     | `goals_per_90`, `xG_per_90`                       |
+| Agrégées offensives      | `goal_contributions`, `goal_contributions_per_90` |
+| Écart réel vs attendu    | `xG_diff`, `xA_diff`                              |
+| Ratios de performance    | `goal_per_shot_ratio`, `xG_per_shot`              |
+| Discipline et style      | `discipline_score`, `player_type`                 |
+| Statistiques de création | `xGChain_per_90`, `xGBuildup_per_90`              |
+
