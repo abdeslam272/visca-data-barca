@@ -1,0 +1,18 @@
+# 1. Utiliser l'image officielle Python
+FROM python:3.10
+
+# 2. Définir le répertoire de travail
+WORKDIR /app
+
+# 3. Copier les fichiers
+COPY . /app
+
+# 4. Installer les dépendances
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+
+# 5. Exposer le port de Streamlit
+EXPOSE 8501
+
+# 6. Lancer l'app Streamlit
+CMD ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]
