@@ -10,28 +10,28 @@ with_indexed AS (
   FROM raw_data
 ),
 
--- Traitement des États du jeu (lignes 10 à 15)
-gamestate_cte AS (
+-- Traitement des Results (lignes 31 à 34)
+Result AS (
   SELECT
     row_num,
     CASE row_num
-      WHEN 9 THEN 'Goal diff 0'
-      WHEN 10 THEN 'Goal diff +1'
-      WHEN 11 THEN 'Goal diff > +1'
-      WHEN 12 THEN 'Goal diff -1'
-      WHEN 13 THEN 'Goal diff < -1'
-    END AS gamestats_label,
-    "gameState" AS json_data
+      WHEN 28 THEN 'Shot on post'
+      WHEN 29 THEN 'Missed shot'
+      WHEN 30 THEN 'Saved shot'
+      WHEN 31 THEN 'Goal'
+      WHEN 32 THEN 'Shot on post'
+    END AS Results_label,
+    result AS json_data
   FROM with_indexed
-  WHERE row_num BETWEEN 9 AND 13
+  WHERE row_num BETWEEN 28 AND 32
 ),
 
-parsed_gamestate AS (
+
+parsed_Result AS (
   SELECT
-    gamestats_label,
+    Results_label,
     
     -- Nettoyage de la chaîne pour JSON valide
-    (REPLACE(json_data, '''', '"')::json ->> 'time')::int AS minutes,
     (REPLACE(json_data, '''', '"')::json ->> 'shots')::int AS shots,
     (REPLACE(json_data, '''', '"')::json ->> 'goals')::int AS goals,
     (REPLACE(json_data, '''', '"')::json ->> 'xG')::float AS xG,
@@ -40,7 +40,7 @@ parsed_gamestate AS (
     (REPLACE(json_data, '''', '"')::json -> 'against' ->> 'goals')::int AS against_goals,
     (REPLACE(json_data, '''', '"')::json -> 'against' ->> 'xG')::float AS against_xG
 
-  FROM gamestate_cte
+  FROM Result
 )
 
-SELECT * FROM parsed_gamestate
+SELECT * FROM parsed_Result
