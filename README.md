@@ -267,3 +267,19 @@ Only those who didn't make the key pass or shoot get +0.5 in xGBuildup
 | Discipline et style      | `discipline_score`, `player_type`                 |
 | Statistiques de création | `xGChain_per_90`, `xGBuildup_per_90`              |
 
+# Streamlit
+
+| Élément                                              | Pourquoi c’est important                                         |
+| ---------------------------------------------------- | ---------------------------------------------------------------- |
+| `Dockerfile.streamlit`                               | Définit comment construire l’environnement Streamlit             |
+| `requirements.txt`                                   | Liste claire des dépendances nécessaires                         |
+| Nom du host = nom du service Docker (`postgres-dbt`) | Permet à Streamlit de communiquer avec PostgreSQL dans Docker    |
+| `volumes` dans `docker-compose.yml`                  | Permet un développement en live sans rebuild à chaque changement |
+| `EXPOSE 8501` + mapping `8501:8501`                  | Ouvre le port nécessaire pour accéder à l’interface Web          |
+
+✅ Si vous modifiez le code Python, pas besoin de rebuild, un simple docker-compose restart streamlit suffit.
+
+🐞 Si vous avez une erreur de connexion PostgreSQL, vérifiez que le nom du host correspond bien au nom du service Docker.
+
+💡 Utilisez st.cache_data pour optimiser les requêtes longues.
+
