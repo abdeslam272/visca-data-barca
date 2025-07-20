@@ -5,3 +5,5 @@ streamlit
 psycopg2-binary
 sqlalchemy
 plotly
+altair
+plotly

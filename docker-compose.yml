@@ -40,6 +40,20 @@ services:
       - postgres-dbt
     entrypoint: [ "tail", "-f", "/dev/null" ]  # pour laisser le conteneur tourner
 
+  streamlit:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    container_name: barca-streamlit
+    depends_on:
+      - postgres-dbt
+    ports:
+      - "8501:8501"
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - .:/app   # Dossier contenant app.py, requirements.txt, etc.
+
 volumes:
   pgdata:
   pgadmin_data:
