@@ -283,3 +283,14 @@ Only those who didn't make the key pass or shoot get +0.5 in xGBuildup
 
 💡 Utilisez st.cache_data pour optimiser les requêtes longues.
 
+pour restart streamlit :
+```bash
+docker-compose restart streamlit
+```
+
+pour les logs :
+```bash
+docker compose logs streamlit
+```
+
+
