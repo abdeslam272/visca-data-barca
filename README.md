@@ -283,3 +283,68 @@ Only those who didn't make the key pass or shoot get +0.5 in xGBuildup
 
 💡 Utilisez st.cache_data pour optimiser les requêtes longues.
 
+pour restart streamlit :
+```bash
+docker-compose restart streamlit
+```
+
+pour les logs :
+```bash
+docker compose logs streamlit
+```
+
+
+** Structure multi-pages Streamlit avec Docker **
+L’application est organisée avec une page d’accueil (app.py) et plusieurs pages thématiques dans le dossier pages/.
+Streamlit détecte automatiquement les fichiers présents dans pages/ et les affiche dans la barre latérale.
+
+📂 Arborescence
+```bash
+.
+├── app.py                  # Page d'accueil
+├── pages/                  # Pages additionnelles
+│   ├── 1_📊_Players.py
+│   ├── 2_⚽_Teams.py
+│   ├── 3_📋_Matchs.py
+│   └── 4_🗺_Formations.py
+├── requirements.txt
+├── Dockerfile.streamlit
+├── docker-compose.yml
+```
+
+🐳 Dockerfile
+Le Dockerfile.streamlit copie tout le code dans /app, installe les dépendances, puis lance Streamlit :
+
+```dockerfile
+FROM python:3.10
+WORKDIR /app
+COPY . /app
+RUN pip install --upgrade pip && pip install -r requirements.txt
+EXPOSE 8501
+CMD ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+```
+
+⚙️ docker-compose.yml
+
+```yaml
+streamlit:
+  build:
+    context: .
+    dockerfile: Dockerfile.streamlit
+  container_name: barca-streamlit
+  depends_on:
+    - postgres-dbt
+  ports:
+    - "8501:8501"
+  environment:
+    - PYTHONUNBUFFERED=1
+  volumes:
+    - .:/app
+```
+
+🚀 Lancer l'application
+```bash
+docker compose build streamlit
+docker compose up streamlit
+```
+Ouvrir ensuite http://localhost:8501 pour accéder à la page d’accueil et naviguer entre les pages via la sidebar.
