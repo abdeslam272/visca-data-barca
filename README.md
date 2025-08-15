@@ -348,3 +348,18 @@ docker compose build streamlit
 docker compose up streamlit
 ```
 Ouvrir ensuite http://localhost:8501 pour accéder à la page d’accueil et naviguer entre les pages via la sidebar.
+
+
+# Airflow
+
+we create the containers we need to add an airflow user by :
+
+```sh
+docker exec -it airflow-webserver airflow users create \
+    --username admin \
+    --firstname First \
+    --lastname Last \
+    --role Admin \
+    --email admin@example.com \
+    --password admin
+```
