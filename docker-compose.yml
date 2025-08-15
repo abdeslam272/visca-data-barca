@@ -54,6 +54,60 @@ services:
     volumes:
       - .:/app   # Dossier contenant app.py, requirements.txt, etc.
 
+  # Postgres for Airflow
+  postgres-airflow:
+    image: postgres:13
+    container_name: postgres-airflow
+    environment:
+      POSTGRES_DB: airflow-db
+      POSTGRES_USER: airflow-user
+      POSTGRES_PASSWORD: airflow-password
+    ports:
+      - "5433:5432" # Change port to avoid conflicts
+    restart: always
+
+  # Airflow
+  airflow-webserver:
+    build:
+      context: .
+      dockerfile: Dockerfile.airflow
+    container_name: airflow-webserver
+    depends_on:
+      - postgres-airflow
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow-user:airflow-password@postgres-airflow:5432/airflow-db
+      AIRFLOW__WEBSERVER__SECRET_KEY: mysecretkey
+    ports:
+      - "8080:8080"
+    restart: always
+    entrypoint: ["/bin/bash", "-c", "airflow db init && airflow webserver"]
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./data:/opt/airflow/data
+      - /var/run/docker.sock:/var/run/docker.sock # Monter le socket Docker dans le conteneur Airflow
+
+
+  # Airflow Scheduler
+  airflow-scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile.airflow
+    container_name: airflow-scheduler
+    depends_on:
+      - postgres-airflow
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow-user:airflow-password@postgres-airflow:5432/airflow-db
+      AIRFLOW__WEBSERVER__SECRET_KEY: mysecretkey
+    restart: always
+    entrypoint: ["airflow", "scheduler"]
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./data:/opt/airflow/data
+      - /var/run/docker.sock:/var/run/docker.sock # Monter le socket Docker dans le conteneur Airflow
+
+      
 volumes:
   pgdata:
   pgadmin_data:
