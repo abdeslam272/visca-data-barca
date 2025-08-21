@@ -363,3 +363,8 @@ docker exec -it airflow-webserver airflow users create \
     --email admin@example.com \
     --password admin
 ```
+
+## 
+le souci vient du fait que $(pwd -W) est évalué dans le conteneur Airflow, et donc ne correspond pas au chemin local.
+
+La bonne pratique est de monter ./data dans le conteneur Airflow via docker-compose, puis de toujours utiliser ce chemin (/opt/airflow/data) dans tes DAGs.
