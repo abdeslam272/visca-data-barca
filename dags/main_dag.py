@@ -1,7 +1,8 @@
+import os
 from airflow import DAG
-from airflow.providers.docker.operators.docker import DockerOperator
 from airflow.operators.bash import BashOperator
 from airflow.utils.dates import days_ago
+
 
 default_args = {
     "owner": "airflow",
@@ -13,17 +14,36 @@ default_args = {
 dag = DAG(
     "main_dag",
     default_args=default_args,
-    schedule_interval="@daily",  # Exécuter tous les jours
+    schedule_interval="@daily",
     catchup=False,
 )
 
-
-# 1️⃣ Scrapping CSV files vers to data folder
 scrapping_data = BashOperator(
     task_id="scrapping_data",
-    bash_command="""
-    docker run --rm -v "$(pwd -W)/data:/app/data" barca-scraper
-    """,
+    bash_command='docker run --rm -v /c/Abdeslam/DOCKER-WORK/visca-data-barca/data:/app/data barca-scraper',
     dag=dag,
 )
 
+dbt_models = [
+    "match_results",
+    "base_attackspeed",
+    "base_formations",
+    "base_game_stats",
+    "base_result",
+    "base_shotzones",
+    "base_situations",
+    "base_timings"
+]
+
+dbt_run = BashOperator(
+    task_id="dbt_run",
+    bash_command=(
+        "docker exec barca-dbt bash -c '"
+        + " && ".join([f"dbt run --select {model}" for model in dbt_models])
+        + "'"
+    ),
+    dag=dag,
+)
+
+# Définir l'ordre d'exécution
+scrapping_data >> dbt_run

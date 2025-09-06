@@ -31,7 +31,7 @@ timings AS (
 
 parsed_timings AS (
   SELECT
-    timing,
+    timings_label,
     
     -- Nettoyage de la chaîne pour JSON valide
     REPLACE(json_data, '''', '"')::json ->> 'stat' AS stat,
