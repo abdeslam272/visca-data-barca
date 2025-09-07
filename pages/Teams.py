@@ -10,7 +10,7 @@ conn = psycopg2.connect(
     port=5432
 )
 
-@st.cache_data
+@st.cache_data(ttl=600) # cache pendant 10 minutes
 def load_teams():
     return pd.read_sql("SELECT * FROM base_game_stats", conn)
 

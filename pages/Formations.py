@@ -3,18 +3,17 @@ import pandas as pd
 import psycopg2
 import plotly.express as px
 
-# Connexion à PostgreSQL
-conn = psycopg2.connect(
-    host="postgres-dbt",
-    dbname="dbt-barca_db",
-    user="dbt-barca",
-    password="dbt-barca",
-    port=5432
-)
-
-@st.cache_data
+@st.cache_data(ttl=600)  # cache pendant 10 minutes
 def load_formations():
-    return pd.read_sql("SELECT * FROM base_formations", conn)
+    with psycopg2.connect(
+        host="postgres-dbt",
+        dbname="dbt-barca_db",
+        user="dbt-barca",
+        password="dbt-barca",
+        port=5432
+    ) as conn:
+        return pd.read_sql("SELECT * FROM base_formations", conn)
+
 
 df = load_formations()
 st.title("⚽ Statistiques des formations de jeu")
