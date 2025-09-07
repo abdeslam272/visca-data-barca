@@ -373,3 +373,11 @@ La bonne pratique est de monter ./data dans le conteneur Airflow via docker-comp
 Chaque fois que tu exécutes DockerOperator, Airflow doit télécharger l’image (si pas déjà locale) et créer un conteneur.
 
 Le conteneur doit démarrer l’environnement Python, installer ses dépendances si ce n’est pas pré-construit, et exécuter ton scraper.
+
+
+Séparation des préoccupations (SoC)
+
+Le DAG = orchestration des data pipelines.
+
+Streamlit = application front-end de visualisation.
+En production, ces deux parties doivent être découplées. On veux que ton Streamlit reste disponible même si mon DAG échoue.
