@@ -11,7 +11,7 @@ def load_teams():
         password="dbt-barca",
         port=5432
     ) as conn:
-        return pd.read_sql("SELECT * FROM match_result", conn)
+        return pd.read_sql("SELECT * FROM match_results", conn)
 
 
 df = load_teams()

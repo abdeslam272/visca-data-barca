@@ -3,18 +3,16 @@ import pandas as pd
 import psycopg2
 import plotly.express as px
 
-# Connexion à PostgreSQL
-conn = psycopg2.connect(
-    host="postgres-dbt",
-    dbname="dbt-barca_db",
-    user="dbt-barca",
-    password="dbt-barca",
-    port=5432
-)
-
-@st.cache_data(ttl=600) # cache pendant 10 minutes
+@st.cache_data(ttl=600)
 def load_data():
-    query = """
+    with psycopg2.connect(
+        host="postgres-dbt",
+        dbname="dbt-barca_db",
+        user="dbt-barca",
+        password="dbt-barca",
+        port=5432
+    ) as conn:
+        query = """
         SELECT player_id, player_name, team_title, "position", games, "time", goals, assists, shots,
                yellow_cards, red_cards, "xG", "xA", npg, "npxG", "xGChain", "xGBuildup",
                goal_conversion_efficiency, xg_per_goal, assist_conversion_efficiency,
@@ -23,20 +21,29 @@ def load_data():
                xg_diff, xa_diff, npxg_diff, xg_ratio, xgchain_per_90, xgbuildup_per_90,
                discipline_score
         FROM public.fct_player_season_stats
-    """
-    return pd.read_sql(query, conn)
+        """
+        df = pd.read_sql(query, conn)
+    return df
 
 df = load_data()
 
+# Vérification sécurité
+if df.empty:
+    st.warning("Aucune donnée disponible pour le moment.")
+    st.stop()
+
 # Filtres interactifs
 teams = sorted(df['team_title'].unique())
-players = sorted(df['player_name'].unique())
-
 team_selected = st.selectbox("Choisir une équipe", teams)
 filtered_df = df[df["team_title"] == team_selected]
 
-player_selected = st.selectbox("Choisir un joueur", filtered_df['player_name'].unique())
-player_df = filtered_df[filtered_df["player_name"] == player_selected].squeeze()
+if filtered_df.empty:
+    st.warning(f"Aucune donnée pour l'équipe {team_selected}.")
+    st.stop()
+
+players = sorted(filtered_df['player_name'].unique())
+player_selected = st.selectbox("Choisir un joueur", players)
+player_df = filtered_df[filtered_df["player_name"] == player_selected].iloc[0]  # prend la première ligne
 
 # Statistiques principales
 col1, col2, col3 = st.columns(3)
@@ -55,4 +62,4 @@ st.plotly_chart(fig)
 
 # Statistiques avancées
 with st.expander("📈 Statistiques avancées"):
-    st.dataframe(player_df.to_frame().T)
+    st.dataframe(pd.DataFrame(player_df).T)
