@@ -381,3 +381,12 @@ Le DAG = orchestration des data pipelines.
 
 Streamlit = application front-end de visualisation.
 En production, ces deux parties doivent être découplées. On veux que ton Streamlit reste disponible même si mon DAG échoue.
+
+
+
+# Avancement de ce projet
+Pour le moment, le projet fonctionne bien avec les données de 2024. Cependant, je souhaite également intégrer les données de 2025 afin de pouvoir :
+
+Comparer la saison du Barça 2024, où nous avons gagné la Ligue, avec la saison en cours.
+Comparer les performances individuelles des joueurs entre les deux saisons.
+Comparer certains matchs spécifiques de l’année précédente avec ceux de cette année.
