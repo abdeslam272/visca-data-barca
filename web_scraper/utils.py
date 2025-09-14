@@ -5,7 +5,8 @@ import pandas as pd
 def extract_and_load_data(script_element, data_type):
     if script_element:
         script_text = script_element.text
-        match = re.search(f"var {data_type}\\s+=\\s+JSON\\.parse\\('(.+?)'\\)", script_text)
+        # match = re.search(f"var {data_type}\\s+=\\s+JSON\\.parse\\('(.+?)'\\)", script_text)
+        match = re.search(f"var {data_type}\\s*=\\s*JSON\\.parse\\((?:'|\")(.+?)(?:'|\")\\)", script_text)
 
         if match:
             json_data_encoded = match.group(1)
