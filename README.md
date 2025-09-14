@@ -381,3 +381,27 @@ Le DAG = orchestration des data pipelines.
 
 Streamlit = application front-end de visualisation.
 En production, ces deux parties doivent être découplées. On veux que ton Streamlit reste disponible même si mon DAG échoue.
+
+
+
+# Avancement de ce projet
+Pour le moment, le projet fonctionne bien avec les données de 2024. Cependant, je souhaite également intégrer les données de 2025 afin de pouvoir :
+
+Comparer la saison du Barça 2024, où nous avons gagné la Ligue, avec la saison en cours.
+Comparer les performances individuelles des joueurs entre les deux saisons.
+Comparer certains matchs spécifiques de l’année précédente avec ceux de cette année.
+
+
+# Problemes de scrapping
+Le problème ne vient pas du scraping en lui-même mais de Docker. Quand je lance mon conteneur, il exécute probablement une ancienne image qui contient encore le code où seules les données de 2024 étaient collectées. Même si j'ai modifié le script local pour inclure 2025, le conteneur ne voit pas ces changements tant que je ne rebuild pas l’image (docker build) ou que je ne monte pas le code en volume. Résultat : on récupère toujours les fichiers 2024 et tu as l’impression que le scraping ignore 2025. En réalité, c’est un problème de cache et de gestion d’image Docker, pas de logique Python.
+
+## Rebuild ton image après chaque modification du code scraping :
+
+```bash
+docker build -t barca-scraper .
+```
+
+##  Exécuter les conteneurs :
+```bash
+docker run --rm -v "$(pwd -W)/data:/app/data" barca-scraper
+```
