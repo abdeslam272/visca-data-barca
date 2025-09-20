@@ -207,6 +207,10 @@ Et tu es prêt à exécuter tes commandes dbt run, dbt seed, dbt test, etc. 💪
 ```bash
 dbt run --select match_results
 ```
+# Deplacer data de la dossier data/ de dossier scrapping vers le dossier seed 
+```bash
+mv data/*.csv dbt/barca_project/seeds
+```
 
 #  Structure des modèles dbt
 1. raw (source déclarée dans sources.yml)
