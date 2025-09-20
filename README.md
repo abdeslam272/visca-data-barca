@@ -212,6 +212,11 @@ dbt run --select match_results
 mv data/*.csv dbt/barca_project/seeds
 ```
 
+# Deplacer data de la dossier seed/ vers barca-postgres-dbt
+```bash
+dbt seed
+```
+
 #  Structure des modèles dbt
 1. raw (source déclarée dans sources.yml)
 Contient les fichiers de données bruts (CSV, fichiers plats, base externe). Ces données ne sont pas modifiées. Exemple : games_2024.csv, players_2024.csv.
