@@ -24,6 +24,18 @@ scrapping_data = BashOperator(
     dag=dag,
 )
 
+moving_data = BashOperator(
+    task_id="moving_data",
+    bash_command='mv data/*.csv dbt/barca_project/seeds',
+    dag= dag,
+)
+
+Create_table_database = BashOperator(
+    task_id="moving_data",
+    bash_command='docker exec barca-dbt bash -c && dbt seed',
+    dag= dag,
+)
+
 dbt_models = [
     "match_results",
     "base_attackspeed",
