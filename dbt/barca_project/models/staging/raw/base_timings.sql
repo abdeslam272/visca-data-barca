@@ -1,20 +1,25 @@
-WITH raw_data AS (
+{% set years = [2024, 2025] %}
+
+with
+{% for year in years %}
+raw_data_{{year}} AS (
   SELECT *
-  FROM {{ ref('stats_2024') }}
+  FROM {{ ref('stats_' ~ year) }}
 ),
 
-with_indexed AS (
+with_indexed_{{year}} AS (
   SELECT 
     *,
     row_number() OVER () AS row_num
-  FROM raw_data
+  FROM raw_data_{{year}}
 ),
 
 
 -- Traitement des États du jeu (lignes 10 à 15)
-timings AS (
+timings_{{year}} AS (
   SELECT
     row_num,
+    {{year}} as year,
     CASE row_num
       WHEN 14 THEN '1-15'
       WHEN 15 THEN '16-30'
@@ -24,15 +29,15 @@ timings AS (
       WHEN 19 THEN '76+'
     END AS timings_label,
     timing AS json_data
-  FROM with_indexed
+  FROM with_indexed_{{year}}
   WHERE row_num BETWEEN 14 AND 19
 ),
 
 
-parsed_timings AS (
+parsed_timings_{{year}} AS (
   SELECT
     timings_label,
-    
+    {{year}} as year,
     -- Nettoyage de la chaîne pour JSON valide
     REPLACE(json_data, '''', '"')::json ->> 'stat' AS stat,
     (REPLACE(json_data, '''', '"')::json ->> 'time')::int AS minutes,
@@ -44,7 +49,14 @@ parsed_timings AS (
     (REPLACE(json_data, '''', '"')::json -> 'against' ->> 'goals')::int AS against_goals,
     (REPLACE(json_data, '''', '"')::json -> 'against' ->> 'xG')::float AS against_xG
 
-  FROM timings
+  FROM timings_{{year}}
 )
+{% if not loop.last %},{% endif %}
+{% endfor %}
 
-SELECT * FROM parsed_timings
+--union final
+SELECT * FROM parsed_timings_{{years[0] }}
+{% for year in years[1:] %}
+union all
+select * from parsed_timings_{{year}}
+{% endfor %}

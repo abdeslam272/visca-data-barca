@@ -1,44 +1,56 @@
-WITH raw_data AS (
-  SELECT *
-  FROM {{ ref('stats_2024') }}
+{% set years = [2024, 2025] %}
+
+with
+{% for year in years %}
+raw_data_{{year}} as (
+  select *
+  from {{ ref('stats_' ~ year) }}
 ),
 
-with_indexed AS (
-  SELECT 
+with_indexed_{{year}} as (
+  select 
     *,
-    row_number() OVER () AS row_num
-  FROM raw_data
+    row_number() over () as row_num
+  from raw_data_{{year}}
 ),
 
-formations AS (
-  SELECT
+formations_{{year}} as (
+  select
     row_num,
-    CASE row_num
-      WHEN 6 THEN '4-2-3-1'
-      WHEN 7 THEN '4-3-3'
-      WHEN 8 THEN '4-1-4-1'
-    END AS formation_label,
-    formation AS json_data
-  FROM with_indexed
-  WHERE row_num BETWEEN 6 AND 8
+    {{year}} as year,
+    case row_num
+      when 6 then '4-2-3-1'
+      when 7 then '4-3-3'
+      when 8 then '4-1-4-1'
+    end as formation_label,
+    formation as json_data
+  from with_indexed_{{year}}
+  where row_num between 6 and 8
 ),
 
-parsed_formations AS (
-  SELECT
+parsed_formations_{{year}} as (
+  select
+    year,
     formation_label,
     
-    -- Nettoyage de la chaîne pour JSON valide
-    REPLACE(json_data, '''', '"')::json ->> 'stat' AS stat,
-    (REPLACE(json_data, '''', '"')::json ->> 'time')::int AS minutes,
-    (REPLACE(json_data, '''', '"')::json ->> 'shots')::int AS shots,
-    (REPLACE(json_data, '''', '"')::json ->> 'goals')::int AS goals,
-    (REPLACE(json_data, '''', '"')::json ->> 'xG')::float AS xG,
+    replace(json_data, '''', '"')::json ->> 'stat'   as stat,
+    (replace(json_data, '''', '"')::json ->> 'time')::int   as minutes,
+    (replace(json_data, '''', '"')::json ->> 'shots')::int  as shots,
+    (replace(json_data, '''', '"')::json ->> 'goals')::int  as goals,
+    (replace(json_data, '''', '"')::json ->> 'xG')::float   as xG,
 
-    (REPLACE(json_data, '''', '"')::json -> 'against' ->> 'shots')::int AS against_shots,
-    (REPLACE(json_data, '''', '"')::json -> 'against' ->> 'goals')::int AS against_goals,
-    (REPLACE(json_data, '''', '"')::json -> 'against' ->> 'xG')::float AS against_xG
+    (replace(json_data, '''', '"')::json -> 'against' ->> 'shots')::int  as against_shots,
+    (replace(json_data, '''', '"')::json -> 'against' ->> 'goals')::int  as against_goals,
+    (replace(json_data, '''', '"')::json -> 'against' ->> 'xG')::float   as against_xG
 
-  FROM formations
+  from formations_{{year}}
 )
+{% if not loop.last %},{% endif %}
+{% endfor %} 
 
-SELECT * FROM parsed_formations
+-- union final
+select * from parsed_formations_{{ years[0] }}
+{% for year in years[1:] %}
+union all
+select * from parsed_formations_{{year}}
+{% endfor %}
