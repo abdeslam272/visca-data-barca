@@ -47,6 +47,13 @@ parsed_Result_{{year}} AS (
 
   FROM Result_{{year}}
 )
-{% if not loop.last %},{% endif %}
 
-SELECT * FROM parsed_Result
+{% if not loop.last %},{% endif %}
+{% endfor %} 
+
+--union all
+SELECT * FROM parsed_Result_{{years[0]}}
+{% for year in years[1:] %}
+union all
+select * from parsed_Result_{{year}}
+{% endfor %}

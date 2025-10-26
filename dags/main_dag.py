@@ -3,7 +3,6 @@ from airflow import DAG
 from airflow.operators.bash import BashOperator
 from airflow.utils.dates import days_ago
 
-
 default_args = {
     "owner": "airflow",
     "depends_on_past": False,
@@ -18,24 +17,35 @@ dag = DAG(
     catchup=False,
 )
 
+# 1️⃣ Étape de scrapping — crée les CSV sur le host
 scrapping_data = BashOperator(
     task_id="scrapping_data",
-    bash_command='docker run --rm -v /c/Abdeslam/DOCKER-WORK/visca-data-barca/data:/app/data barca-scraper',
+    bash_command=(
+        'docker run --rm '
+        '-v /c/Abdeslam/DOCKER-WORK/visca-data-barca/data:/app/data '
+        'barca-scraper'
+    ),
     dag=dag,
 )
 
+# 2️⃣ Étape de déplacement — crée le dossier si besoin et déplace les CSV
 moving_data = BashOperator(
     task_id="moving_data",
-    bash_command='mv data/*.csv dbt/barca_project/seeds',
-    dag= dag,
+    bash_command=(
+        'mkdir -p /opt/airflow/dbt/barca_project/seeds && '
+        'mv /opt/airflow/data/*.csv /opt/airflow/dbt/barca_project/seeds/'
+    ),
+    dag=dag,
 )
 
-Create_table_database = BashOperator(
-    task_id="moving_data",
-    bash_command='docker exec barca-dbt bash -c && dbt seed',
-    dag= dag,
+# 3️⃣ Étape de seed DBT
+create_table_database = BashOperator(
+    task_id="create_table_database",
+    bash_command='docker exec barca-dbt bash -c "dbt seed"',
+    dag=dag,
 )
 
+# 4️⃣ Étape de run DBT
 dbt_models = [
     "match_results",
     "base_attackspeed",
@@ -57,5 +67,5 @@ dbt_run = BashOperator(
     dag=dag,
 )
 
-# Définir l'ordre d'exécution
-scrapping_data >> dbt_run
+# 5️⃣ Ordre d'exécution
+scrapping_data >> moving_data >> create_table_database >> dbt_run
