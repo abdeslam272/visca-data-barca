@@ -18,7 +18,7 @@ with_indexed_{{year}} AS (
 Shotzones_{{year}} AS (
   SELECT
     row_num,
-    {{years}} as year,
+    {{year}} as year,
     CASE row_num
       WHEN 20 THEN 'Own goals'
       WHEN 21 THEN 'Out of box'

@@ -34,8 +34,8 @@ Result_{{year}} AS (
 
 parsed_Result_{{year}} AS (
   SELECT
-    Results_label_{{year}},
-    
+    Results_label,
+    year,
     -- Nettoyage de la chaîne pour JSON valide
     (REPLACE(json_data, '''', '"')::json ->> 'shots')::int AS shots,
     (REPLACE(json_data, '''', '"')::json ->> 'goals')::int AS goals,
