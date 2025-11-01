@@ -3,7 +3,7 @@ import pandas as pd
 import psycopg2
 import plotly.express as px
 
-@st.cache_data(ttl=600)  # cache pendant 10 minutes
+@st.cache_data(ttl=600)
 def load_formations():
     with psycopg2.connect(
         host="postgres-dbt",
@@ -13,50 +13,80 @@ def load_formations():
         port=5432
     ) as conn:
         return pd.read_sql("SELECT * FROM base_formations", conn)
-
-
+    
+# chargement de donnee 
 df = load_formations()
-st.title("⚽ Statistiques des formations de jeu")
-st.dataframe(df)
+st.title("Statistiques des formations de jeu (2024 vs 2025)")
 
-# Filtres interactifs
-formations_list = sorted(df['formation_label'].unique())
-formation_selected = st.selectbox("Choisir une formation", formations_list)
+# Liste deroulante des formations dispo
+formations_list = sorted(df["formation_label"].unique())
+formations_selected = st.selectbox("Choisir une formation", formations_list)
 
-formation_df = df[df["formation_label"] == formation_selected].squeeze()
+#sous-ensemble pour la formation sélectionnée
+formation_df = df[df["formation_label"] == formations_selected].sort_values("year")
 
-# Statistiques principales
-col1, col2, col3, col4, col5, col6, col7 = st.columns(7)
-col1.metric("⏱ Minutes", formation_df["minutes"])
-col2.metric("🎯 Tirs", formation_df["shots"])
-col3.metric("📊 xG", round(formation_df["xg"], 2))
-col4.metric("⚽ Buts", formation_df["goals"])
-col5.metric("🚫 Tirs concédés", formation_df["against_shots"])
-col6.metric("🚫 Buts concédés", formation_df["against_goals"])
-col7.metric("🚫 xG concédés", round(formation_df["against_xg"], 2))
+# verifie les deux années dispo
+years_available = formation_df["year"].unique()
 
-# Graphique combiné
-chart_data = pd.DataFrame({
-    "Statistiques": [
-        "Minutes", "Tirs", "xG", "Buts",
-        "Tirs concédés", "Buts concédés", "xG concédés"
-    ],
-    "Valeur": [
-        formation_df["minutes"], formation_df["shots"], formation_df["xg"], formation_df["goals"],
-        formation_df["against_shots"], formation_df["against_goals"], formation_df["against_xg"]
-    ]
-})
+# affichage des donnees 2025
 
-fig = px.bar(
-    chart_data,
-    x="Statistiques",
-    y="Valeur",
-    color="Statistiques",
-    text="Valeur",
-    title=f"📊 Performance de la formation {formation_selected}"
+st.subheader(f" Statistiques {formations_selected} par année")
+
+# Stylisation : mise en subrillance de 2025
+def highlight_2025(row):
+    if row["year"] == 2025:
+        return ["background-color : "]*len(row)
+    else:
+        return [""]*len(row)
+    
+st.dataframe(
+    formation_df.style.apply(highlight_2025, axis=1)
 )
-st.plotly_chart(fig)
 
-# Statistiques avancées
-with st.expander("📈 Statistiques avancées"):
-    st.dataframe(formation_df.to_frame().T)
+# Comparaison 2024 vs 2025
+if set([2024, 2025]).issubset(years_available):
+    st.subheader(f"Comparaison 2024 vs 2025 - {formations_selected}")
+
+    stats_cols = ["minutes", "shots", "goals", "xg", "against_shots", "against_goals", "against_xg"]
+
+    df_compare = (
+        formation_df.pivot(index="formation_label", columns = "year", values = stats_cols)
+        .swaplevel(axis=1)
+        .sort_index(axis=1)
+    )
+
+    df_compare.columns = [f"{year}_{stat}" for (year, stat) in df_compare.columns]
+    df_compare = df_compare.reset_index()
+
+    # Calcul des écarts
+    for stat in stats_cols:
+        col_2024 = f"2024_{stat}"
+        col_2025 = f"2025_{stat}"
+        if col_2024 in df_compare.columns and col_2025 in df_compare.columns:
+            df_compare[f"{stat}"] = df_compare[f"2025_{stat}"] - df_compare[f"2025_{stat}"]
+
+    st.dataframe(df_compare)
+
+    #Graphique comparatif
+    chart_data = pd.melt(
+        formation_df,
+        id_vars=["year"],
+        value_vars=["goals", "xg", "against_goals", "against_xg"],
+        var_name="Statistique",
+        value_name="Valeur"
+    )
+
+    fig = px.bar(
+        chart_data,
+        x="Statistique",
+        y="Valeur",
+        color="year",
+        barmode="group",
+        text_auto=".2f",
+        title = f"Comparaison de performances ({formations_selected})"
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
+
+else:
+    st.info(f"les donnes pour 2024 et 2025 ne sont pas toutes dispo pour {formations_selected}")
