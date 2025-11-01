@@ -44,13 +44,32 @@ parsed_formations_{{year}} as (
     (replace(json_data, '''', '"')::json -> 'against' ->> 'xG')::float   as against_xG
 
   from formations_{{year}}
+),
+
+transformed_formations_{{year}} as (
+  select
+    year,
+    formation_label,
+    stat,
+    minutes,
+    shots,
+    goals,
+    xG,
+    against_shots,
+    against_goals,
+    against_xG,
+    CASE WHEN xG = 0 then null else goals/xG end as efficient_goal_formations,
+    shots - against_shots as efficient_shots_formations,
+    CASE WHEN against_xG = 0 then null else against_goals/against_xG end as efficient_against_goals_formations
+
+  from parsed_formations_{{year}}
 )
 {% if not loop.last %},{% endif %}
 {% endfor %} 
 
 -- union final
-select * from parsed_formations_{{ years[0] }}
+select * from transformed_formations_{{ years[0] }}
 {% for year in years[1:] %}
 union all
-select * from parsed_formations_{{year}}
+select * from transformed_formations_{{year}}
 {% endfor %}
