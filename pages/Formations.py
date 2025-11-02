@@ -1,7 +1,9 @@
 import streamlit as st
 import pandas as pd
 import psycopg2
+import matplotlib.pyplot as plt
 import plotly.express as px
+
 
 @st.cache_data(ttl=600)
 def load_formations():
@@ -13,80 +15,97 @@ def load_formations():
         port=5432
     ) as conn:
         return pd.read_sql("SELECT * FROM base_formations", conn)
-    
-# chargement de donnee 
+
+# === Chargement des données ===
 df = load_formations()
-st.title("Statistiques des formations de jeu (2024 vs 2025)")
+st.title("⚽ Statistiques des formations de jeu (2024 vs 2025)")
 
-# Liste deroulante des formations dispo
-formations_list = sorted(df["formation_label"].unique())
-formations_selected = st.selectbox("Choisir une formation", formations_list)
+# st.dataframe(df)
 
-#sous-ensemble pour la formation sélectionnée
-formation_df = df[df["formation_label"] == formations_selected].sort_values("year")
+# === Extraction propre des listes ===
+formations_2024 = df[df["year"] == 2024]["formation_label"].tolist()
+formations_2025 = df[df["year"] == 2025]["formation_label"].tolist()
 
-# verifie les deux années dispo
-years_available = formation_df["year"].unique()
+minutes_2024 = df[df["year"] == 2024]["minutes"].tolist()
+minutes_2025 = df[df["year"] == 2025]["minutes"].tolist()
 
-# affichage des donnees 2025
+goals_2024 = df[df["year"] == 2024]["goals"].tolist()
+goals_2025 = df[df["year"] == 2025]["goals"].tolist()
 
-st.subheader(f" Statistiques {formations_selected} par année")
+shots_2024 = df[df["year"] == 2024]["shots"].tolist()
+shots_2025 = df[df["year"] == 2025]["shots"].tolist()
 
-# Stylisation : mise en subrillance de 2025
-def highlight_2025(row):
-    if row["year"] == 2025:
-        return ["background-color : "]*len(row)
-    else:
-        return [""]*len(row)
-    
-st.dataframe(
-    formation_df.style.apply(highlight_2025, axis=1)
-)
+explode_small = 0.03  # petit écart visuel
 
-# Comparaison 2024 vs 2025
-if set([2024, 2025]).issubset(years_available):
-    st.subheader(f"Comparaison 2024 vs 2025 - {formations_selected}")
+# === Temps de jeu ===
+col1, col2 = st.columns(2)
+with col1:
+    st.subheader("🕒 Répartition du temps de jeu — 2024")
+    fig1, ax1 = plt.subplots()
+    ax1.pie(minutes_2024, labels=formations_2024, explode=[explode_small]*len(formations_2024),
+            autopct='%1.1f%%', shadow=True, startangle=90)
+    ax1.axis('equal')
+    st.pyplot(fig1)
 
-    stats_cols = ["minutes", "shots", "goals", "xg", "against_shots", "against_goals", "against_xg"]
+with col2:
+    st.subheader("🕒 Répartition du temps de jeu — 2025")
+    fig2, ax2 = plt.subplots()
+    ax2.pie(minutes_2025, labels=formations_2025, explode=[explode_small]*len(formations_2025),
+            autopct='%1.1f%%', shadow=True, startangle=90)
+    ax2.axis('equal')
+    st.pyplot(fig2)
 
-    df_compare = (
-        formation_df.pivot(index="formation_label", columns = "year", values = stats_cols)
-        .swaplevel(axis=1)
-        .sort_index(axis=1)
-    )
+# === Buts ===
+col3, col4 = st.columns(2)
+with col3:
+    st.subheader("⚽ Répartition des buts — 2024")
+    fig3, ax3 = plt.subplots()
+    ax3.pie(goals_2024, labels=formations_2024, explode=[explode_small]*len(formations_2024),
+            autopct='%1.1f%%', shadow=True, startangle=90)
+    ax3.axis('equal')
+    st.pyplot(fig3)
 
-    df_compare.columns = [f"{year}_{stat}" for (year, stat) in df_compare.columns]
-    df_compare = df_compare.reset_index()
+with col4:
+    st.subheader("⚽ Répartition des buts — 2025")
+    fig4, ax4 = plt.subplots()
+    ax4.pie(goals_2025, labels=formations_2025, explode=[explode_small]*len(formations_2025),
+            autopct='%1.1f%%', shadow=True, startangle=90)
+    ax4.axis('equal')
+    st.pyplot(fig4)
 
-    # Calcul des écarts
-    for stat in stats_cols:
-        col_2024 = f"2024_{stat}"
-        col_2025 = f"2025_{stat}"
-        if col_2024 in df_compare.columns and col_2025 in df_compare.columns:
-            df_compare[f"{stat}"] = df_compare[f"2025_{stat}"] - df_compare[f"2025_{stat}"]
+# === Tirs ===
+col5, col6 = st.columns(2)
+with col5:
+    st.subheader("🎯 Répartition des tirs — 2024")
+    fig5, ax5 = plt.subplots()
+    ax5.pie(shots_2024, labels=formations_2024, explode=[explode_small]*len(formations_2024),
+            autopct='%1.1f%%', shadow=True, startangle=90)
+    ax5.axis('equal')
+    st.pyplot(fig5)
 
-    st.dataframe(df_compare)
+with col6:
+    st.subheader("🎯 Répartition des tirs — 2025")
+    fig6, ax6 = plt.subplots()
+    ax6.pie(shots_2025, labels=formations_2025, explode=[explode_small]*len(formations_2025),
+            autopct='%1.1f%%', shadow=True, startangle=90)
+    ax6.axis('equal')
+    st.pyplot(fig6)
 
-    #Graphique comparatif
-    chart_data = pd.melt(
-        formation_df,
-        id_vars=["year"],
-        value_vars=["goals", "xg", "against_goals", "against_xg"],
-        var_name="Statistique",
-        value_name="Valeur"
-    )
 
-    fig = px.bar(
-        chart_data,
-        x="Statistique",
-        y="Valeur",
-        color="year",
+st.subheader("⚽ Efficacité des formations — Buts marqués / concédés")
+df_efficient_goals = df[["year", "formation_label", "efficient_goal_formations", "efficient_against_goals_formations"]]
+
+st.dataframe(df_efficient_goals)
+
+
+
+fig7 = px.bar(
+        df_efficient_goals,
+        x="formation_label",
+        y="efficient_goal_formations",
+        color="Type d’efficacité",
         barmode="group",
-        text_auto=".2f",
-        title = f"Comparaison de performances ({formations_selected})"
+        facet_col="formation_label",
+        title="Comparaison de l’efficacité des formations (buts)"
     )
-
-    st.plotly_chart(fig, use_container_width=True)
-
-else:
-    st.info(f"les donnes pour 2024 et 2025 ne sont pas toutes dispo pour {formations_selected}")
+st.plotly_chart(fig7, use_container_width=True)
