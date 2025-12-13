@@ -93,19 +93,35 @@ with col6:
 
 
 st.subheader("⚽ Efficacité des formations — Buts marqués / concédés")
-df_efficient_goals = df[["year", "formation_label", "efficient_goal_formations", "efficient_against_goals_formations"]]
 
-st.dataframe(df_efficient_goals)
+df_efficiency_goals = df[[
+    "year", 
+    "formation_label", 
+    "efficient_goal_formations", 
+    "efficient_against_goals_formations"
+]]
 
+st.dataframe(df_efficiency_goals)
 
+# Melt the dataframe
+df_melted_goals = pd.melt(
+    df_efficiency_goals,
+    id_vars=["year", "formation_label"],
+    value_vars=["efficient_goal_formations", "efficient_against_goals_formations"],
+    var_name="Type d’efficacité",
+    value_name="Valeur"
+)
 
+# Build the chart
 fig7 = px.bar(
-        df_efficient_goals,
-        x="formation_label",
-        y="efficient_goal_formations",
-        color="Type d’efficacité",
-        barmode="group",
-        facet_col="formation_label",
-        title="Comparaison de l’efficacité des formations (buts)"
-    )
+    df_melted_goals,
+    x="formation_label",
+    y="Valeur",
+    color="year",                     # Legend: 2024 / 2025
+    barmode="group",                  # Side-by-side bars
+    facet_col="Type d’efficacité",    # Two columns: buts marqués / buts concédés
+    title="Comparaison des efficacités par formation et par année"
+)
+
 st.plotly_chart(fig7, use_container_width=True)
+
