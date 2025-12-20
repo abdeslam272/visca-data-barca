@@ -1,10 +1,12 @@
 import streamlit as st
 import pandas as pd
 import psycopg2
+import matplotlib.pyplot as plt
 import plotly.express as px
 
+
 @st.cache_data(ttl=600)
-def load_data():
+def load_players():
     with psycopg2.connect(
         host="postgres-dbt",
         dbname="dbt-barca_db",
@@ -12,54 +14,114 @@ def load_data():
         password="dbt-barca",
         port=5432
     ) as conn:
-        query = """
-        SELECT player_id, player_name, team_title, "position", games, "time", goals, assists, shots,
-               yellow_cards, red_cards, "xG", "xA", npg, "npxG", "xGChain", "xGBuildup",
-               goal_conversion_efficiency, xg_per_goal, assist_conversion_efficiency,
-               goal_per_shot_ratio, xg_per_shot, goals_per_90, assists_per_90, shots_per_90,
-               xg_per_90, xa_per_90, goal_contributions, goal_contributions_per_90,
-               xg_diff, xa_diff, npxg_diff, xg_ratio, xgchain_per_90, xgbuildup_per_90,
-               discipline_score
-        FROM public.fct_player_season_stats
-        """
-        df = pd.read_sql(query, conn)
-    return df
+        return pd.read_sql("SELECT * FROM base_players", conn)
 
-df = load_data()
+# === Chargement des données ===
+df = load_players()
+st.title("⚽ Statistiques des joueurs (2024 vs 2025)")
 
-# Vérification sécurité
-if df.empty:
-    st.warning("Aucune donnée disponible pour le moment.")
-    st.stop()
+# st.dataframe(df)
 
-# Filtres interactifs
-teams = sorted(df['team_title'].unique())
-team_selected = st.selectbox("Choisir une équipe", teams)
-filtered_df = df[df["team_title"] == team_selected]
+# === Extraction propre des listes ===
+joueurs_2024 = df[df["year"] == 2024]["player_name"].tolist()
+joueurs_2025 = df[df["year"] == 2025]["player_name"].tolist()
 
-if filtered_df.empty:
-    st.warning(f"Aucune donnée pour l'équipe {team_selected}.")
-    st.stop()
+minutes_2024 = df[df["year"] == 2024]["minutes_played"].tolist()
+minutes_2025 = df[df["year"] == 2025]["minutes_played"].tolist()
 
-players = sorted(filtered_df['player_name'].unique())
-player_selected = st.selectbox("Choisir un joueur", players)
-player_df = filtered_df[filtered_df["player_name"] == player_selected].iloc[0]  # prend la première ligne
+goals_2024 = df[df["year"] == 2024]["goals_scored"].tolist()
+goals_2025 = df[df["year"] == 2025]["goals_scored"].tolist()
 
-# Statistiques principales
-col1, col2, col3 = st.columns(3)
-col1.metric("🎯 Buts", player_df["goals"])
-col2.metric("🅰️ Passes", player_df["assists"])
-col3.metric("📊 xG", round(player_df["xG"], 2))
+assists_2024 = df[df["year"] == 2024]["assists"].tolist()
+assists_2025 = df[df["year"] == 2025]["assists"].tolist()
 
-# Graphique combiné
-chart_data = pd.DataFrame({
-    "Statistiques": ["Buts", "xG", "Passes", "xA"],
-    "Valeur": [player_df["goals"], player_df["xG"], player_df["assists"], player_df["xA"]]
-})
-fig = px.bar(chart_data, x="Statistiques", y="Valeur", color="Statistiques",
-             text="Valeur", title=f"📊 Performance de {player_selected}")
-st.plotly_chart(fig)
+explode_small = 0.03  # petit écart visuel
 
-# Statistiques avancées
-with st.expander("📈 Statistiques avancées"):
-    st.dataframe(pd.DataFrame(player_df).T)
+# === Temps de jeu ===
+col1, col2 = st.columns(2)
+with col1:
+    st.subheader("🕒 Répartition du buteurs — 2024")
+    fig1, ax1 = plt.subplots()
+    ax1.pie(goals_2024, labels=joueurs_2024, explode=[explode_small]*len(joueurs_2024),
+            autopct='%1.1f%%', shadow=True, startangle=90)
+    ax1.axis('equal')
+    st.pyplot(fig1)
+
+with col2:
+    st.subheader("🕒 Répartition du buteurs — 2025")
+    fig2, ax2 = plt.subplots()
+    ax2.pie(goals_2025, labels=joueurs_2025, explode=[explode_small]*len(joueurs_2025),
+            autopct='%1.1f%%', shadow=True, startangle=90)
+    ax2.axis('equal')
+    st.pyplot(fig2)
+
+# === Buts ===
+col3, col4 = st.columns(2)
+with col3:
+    st.subheader("⚽ Répartition des assisteurs — 2024")
+    fig3, ax3 = plt.subplots()
+    ax3.pie(assists_2024, labels=joueurs_2024, explode=[explode_small]*len(joueurs_2024),
+            autopct='%1.1f%%', shadow=True, startangle=90)
+    ax3.axis('equal')
+    st.pyplot(fig3)
+
+with col4:
+    st.subheader("⚽ Répartition des assisteurs — 2025")
+    fig4, ax4 = plt.subplots()
+    ax4.pie(assists_2025, labels=joueurs_2025, explode=[explode_small]*len(joueurs_2025),
+            autopct='%1.1f%%', shadow=True, startangle=90)
+    ax4.axis('equal')
+    st.pyplot(fig4)
+
+# === Tirs ===
+col5, col6 = st.columns(2)
+with col5:
+    st.subheader("🎯 Répartition des contributions — 2024")
+    fig5, ax5 = plt.subplots()
+    ax5.pie(shots_2024, labels=formations_2024, explode=[explode_small]*len(formations_2024),
+            autopct='%1.1f%%', shadow=True, startangle=90)
+    ax5.axis('equal')
+    st.pyplot(fig5)
+
+with col6:
+    st.subheader("🎯 Répartition des contributions — 2025")
+    fig6, ax6 = plt.subplots()
+    ax6.pie(shots_2025, labels=formations_2025, explode=[explode_small]*len(formations_2025),
+            autopct='%1.1f%%', shadow=True, startangle=90)
+    ax6.axis('equal')
+    st.pyplot(fig6)
+
+
+st.subheader("⚽ Efficacité des formations — Buts marqués / concédés")
+
+df_efficiency_goals = df[[
+    "year", 
+    "formation_label", 
+    "efficient_goal_formations", 
+    "efficient_against_goals_formations"
+]]
+
+st.dataframe(df_efficiency_goals)
+
+# Melt the dataframe
+df_melted_goals = pd.melt(
+    df_efficiency_goals,
+    id_vars=["year", "formation_label"],
+    value_vars=["efficient_goal_formations", "efficient_against_goals_formations"],
+    var_name="Type d’efficacité",
+    value_name="Valeur"
+)
+
+# Build the chart
+fig7 = px.bar(
+    df_melted_goals,
+    x="formation_label",
+    y="Valeur",
+    color="year",                     # Legend: 2024 / 2025
+    barmode="group",                  # Side-by-side bars
+    facet_col="Type d’efficacité",    # Two columns: buts marqués / buts concédés
+    title="Comparaison des efficacités par formation et par année"
+)
+
+st.plotly_chart(fig7, use_container_width=True)
+
