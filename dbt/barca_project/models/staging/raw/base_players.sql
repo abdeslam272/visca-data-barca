@@ -45,11 +45,12 @@ transformed_players_{{ year }} as (
         non_penalty_goals,
         xg_chain,
         xg_buildup,
+        assists + goals_scored as Contributions_GA,
         (goals_scored * 1.0 / minutes_played) * 90 as goals_scored_per_90_minutes,
         (assists * 1.0 / minutes_played) * 90 as assists_per_90_minutes,
         (xg_created * 1.0 / minutes_played) * 90 as xg_created_per_90_minutes,
         (assists_created * 1.0 / minutes_played) * 90 as assists_created_per_90_minutes,
-        (assists * 1.0 / minutes_played) * 90 + (goals_scored * 1.0 / minutes_played) * 90 as ContibutionsG_A,
+        (assists * 1.0 / minutes_played) * 90 + (goals_scored * 1.0 / minutes_played) * 90 as Contributions_GA_per_90_minutes,
         goals_scored / nullif(xg_created, 0) as efficient_goal_scoring
 
     from cleaned_players_{{ year }}

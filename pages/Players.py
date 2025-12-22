@@ -21,23 +21,43 @@ df = load_players()
 st.title("⚽ Statistiques des joueurs (2024 vs 2025)")
 
 # st.dataframe(df)
+def get_top10(df, year, metric):
+    top10 = (
+        df[df["year"] == year]
+        .sort_values(metric, ascending=False)
+        .head(10)
+    )
+    return top10["player_name"].tolist(), top10[metric].tolist()
 
-# === Extraction propre des listes ===
-joueurs_2024 = df[df["year"] == 2024]["player_name"].tolist()
-joueurs_2025 = df[df["year"] == 2025]["player_name"].tolist()
 
-minutes_2024 = df[df["year"] == 2024]["minutes_played"].tolist()
-minutes_2025 = df[df["year"] == 2025]["minutes_played"].tolist()
+joueurs_2024, goals_2024 = get_top10(df, 2024, "goals_scored")
+joueurs_2025, goals_2025 = get_top10(df, 2025, "goals_scored")
 
-goals_2024 = df[df["year"] == 2024]["goals_scored"].tolist()
-goals_2025 = df[df["year"] == 2025]["goals_scored"].tolist()
+joueurs_ast_2024, assists_2024 = get_top10(df, 2024, "assists")
+joueurs_ast_2025, assists_2025 = get_top10(df, 2025, "assists")
 
-assists_2024 = df[df["year"] == 2024]["assists"].tolist()
-assists_2025 = df[df["year"] == 2025]["assists"].tolist()
+joueurs_contrib_2024, contrib_2024 = get_top10(df, 2024, "contributions_ga")
+joueurs_contrib_2025, contrib_2025 = get_top10(df, 2025, "contributions_ga")
+
+# # === Extraction propre des listes ===
+# joueurs_2024 = df[df["year"] == 2024]["player_name"].tolist()
+# joueurs_2025 = df[df["year"] == 2025]["player_name"].tolist()
+
+# minutes_2024 = df[df["year"] == 2024]["minutes_played"].tolist()
+# minutes_2025 = df[df["year"] == 2025]["minutes_played"].tolist()
+
+# goals_2024 = df[df["year"] == 2024]["goals_scored"].tolist()
+# goals_2025 = df[df["year"] == 2025]["goals_scored"].tolist()
+
+# assists_2024 = df[df["year"] == 2024]["assists"].tolist()
+# assists_2025 = df[df["year"] == 2025]["assists"].tolist()
+
+# Contibutions_GA_2024 = df[df["year"] == 2024]["contributions_ga"].tolist()
+# Contibutions_GA_2025 = df[df["year"] == 2025]["contributions_ga"].tolist()
 
 explode_small = 0.03  # petit écart visuel
 
-# === Temps de jeu ===
+# === Buts ===
 col1, col2 = st.columns(2)
 with col1:
     st.subheader("🕒 Répartition du buteurs — 2024")
@@ -55,12 +75,12 @@ with col2:
     ax2.axis('equal')
     st.pyplot(fig2)
 
-# === Buts ===
+# === Assists ===
 col3, col4 = st.columns(2)
 with col3:
     st.subheader("⚽ Répartition des assisteurs — 2024")
     fig3, ax3 = plt.subplots()
-    ax3.pie(assists_2024, labels=joueurs_2024, explode=[explode_small]*len(joueurs_2024),
+    ax3.pie(assists_2024, labels=joueurs_ast_2024, explode=[explode_small]*len(joueurs_ast_2024),
             autopct='%1.1f%%', shadow=True, startangle=90)
     ax3.axis('equal')
     st.pyplot(fig3)
@@ -68,17 +88,17 @@ with col3:
 with col4:
     st.subheader("⚽ Répartition des assisteurs — 2025")
     fig4, ax4 = plt.subplots()
-    ax4.pie(assists_2025, labels=joueurs_2025, explode=[explode_small]*len(joueurs_2025),
+    ax4.pie(assists_2025, labels=joueurs_ast_2025, explode=[explode_small]*len(joueurs_ast_2025),
             autopct='%1.1f%%', shadow=True, startangle=90)
     ax4.axis('equal')
     st.pyplot(fig4)
 
-# === Tirs ===
+# === Contributions G A  ===
 col5, col6 = st.columns(2)
 with col5:
     st.subheader("🎯 Répartition des contributions — 2024")
     fig5, ax5 = plt.subplots()
-    ax5.pie(shots_2024, labels=formations_2024, explode=[explode_small]*len(formations_2024),
+    ax5.pie(contrib_2024, labels=joueurs_contrib_2024, explode=[explode_small]*len(joueurs_contrib_2024),
             autopct='%1.1f%%', shadow=True, startangle=90)
     ax5.axis('equal')
     st.pyplot(fig5)
@@ -86,42 +106,7 @@ with col5:
 with col6:
     st.subheader("🎯 Répartition des contributions — 2025")
     fig6, ax6 = plt.subplots()
-    ax6.pie(shots_2025, labels=formations_2025, explode=[explode_small]*len(formations_2025),
+    ax6.pie(contrib_2025, labels=joueurs_contrib_2025, explode=[explode_small]*len(joueurs_contrib_2025),
             autopct='%1.1f%%', shadow=True, startangle=90)
     ax6.axis('equal')
     st.pyplot(fig6)
-
-
-st.subheader("⚽ Efficacité des formations — Buts marqués / concédés")
-
-df_efficiency_goals = df[[
-    "year", 
-    "formation_label", 
-    "efficient_goal_formations", 
-    "efficient_against_goals_formations"
-]]
-
-st.dataframe(df_efficiency_goals)
-
-# Melt the dataframe
-df_melted_goals = pd.melt(
-    df_efficiency_goals,
-    id_vars=["year", "formation_label"],
-    value_vars=["efficient_goal_formations", "efficient_against_goals_formations"],
-    var_name="Type d’efficacité",
-    value_name="Valeur"
-)
-
-# Build the chart
-fig7 = px.bar(
-    df_melted_goals,
-    x="formation_label",
-    y="Valeur",
-    color="year",                     # Legend: 2024 / 2025
-    barmode="group",                  # Side-by-side bars
-    facet_col="Type d’efficacité",    # Two columns: buts marqués / buts concédés
-    title="Comparaison des efficacités par formation et par année"
-)
-
-st.plotly_chart(fig7, use_container_width=True)
-
