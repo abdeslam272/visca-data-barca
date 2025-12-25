@@ -39,21 +39,14 @@ joueurs_ast_2025, assists_2025 = get_top10(df, 2025, "assists")
 joueurs_contrib_2024, contrib_2024 = get_top10(df, 2024, "contributions_ga")
 joueurs_contrib_2025, contrib_2025 = get_top10(df, 2025, "contributions_ga")
 
-# # === Extraction propre des listes ===
-# joueurs_2024 = df[df["year"] == 2024]["player_name"].tolist()
-# joueurs_2025 = df[df["year"] == 2025]["player_name"].tolist()
+# joueurs_goals_scored_per_90_minutes_2024, goals_scored_per_90_minutes_2024 = get_top10(df, 2024, "goals_scored_per_90_minutes")
+# joueurs_goals_scored_per_90_minutes_2025, goals_scored_per_90_minutes_2025 = get_top10(df, 2025, "goals_scored_per_90_minutes")
 
-# minutes_2024 = df[df["year"] == 2024]["minutes_played"].tolist()
-# minutes_2025 = df[df["year"] == 2025]["minutes_played"].tolist()
+# joueurs_assists_per_90_minutes_2024, assists_per_90_minutes_2024 = get_top10(df, 2024, "assists_per_90_minutes")
+# joueurs_assists_per_90_minutes_2025, assists_per_90_minutes_2025 = get_top10(df, 2025, "assists_per_90_minutes")
 
-# goals_2024 = df[df["year"] == 2024]["goals_scored"].tolist()
-# goals_2025 = df[df["year"] == 2025]["goals_scored"].tolist()
-
-# assists_2024 = df[df["year"] == 2024]["assists"].tolist()
-# assists_2025 = df[df["year"] == 2025]["assists"].tolist()
-
-# Contibutions_GA_2024 = df[df["year"] == 2024]["contributions_ga"].tolist()
-# Contibutions_GA_2025 = df[df["year"] == 2025]["contributions_ga"].tolist()
+# joueurs_Contributions_GA_per_90_minutes_2024, Contributions_GA_per_90_minutes_2024 = get_top10(df, 2024, "contributions_ga_per_90_minutes")
+# joueurs_Contributions_GA_per_90_minutes_2025, Contributions_GA_per_90_minutes_2025 = get_top10(df, 2025, "contributions_ga_per_90_minutes")
 
 explode_small = 0.03  # petit écart visuel
 
@@ -110,3 +103,39 @@ with col6:
             autopct='%1.1f%%', shadow=True, startangle=90)
     ax6.axis('equal')
     st.pyplot(fig6)
+
+# # === les buts marquee par 90 mins   ===
+# col7, col8 = st.columns(2)
+# with col7:
+#     st.subheader("🎯 Répartition des buts marquee par 90 mins — 2024")
+#     fig7, ax7 = plt.subplots()
+#     ax7.pie(goals_scored_per_90_minutes_2024, labels=joueurs_goals_scored_per_90_minutes_2024, explode=[explode_small]*len(joueurs_goals_scored_per_90_minutes_2024),
+#             autopct='%1.1f%%', shadow=True, startangle=90)
+#     ax7.axis('equal')
+#     st.pyplot(fig7)
+
+# with col8:
+#     st.subheader("🎯 Répartition des buts marquee par 90 mins — 2025")
+#     fig8, ax8 = plt.subplots()
+#     ax8.pie(goals_scored_per_90_minutes_2025, labels=joueurs_goals_scored_per_90_minutes_2025, explode=[explode_small]*len(joueurs_goals_scored_per_90_minutes_2025),
+#             autopct='%1.1f%%', shadow=True, startangle=90)
+#     ax8.axis('equal')
+#     st.pyplot(fig8)
+
+# # === les assists donnees par 90 mins  ===
+# col9, col10 = st.columns(2)
+# with col9:
+#     st.subheader("🎯 Répartition des assists donnees par 90 mins — 2024")
+#     fig9, ax9 = plt.subplots()
+#     ax9.pie(assists_per_90_minutes_2024, labels=joueurs_assists_per_90_minutes_2024, explode=[explode_small]*len(joueurs_assists_per_90_minutes_2024),
+#             autopct='%1.1f%%', shadow=True, startangle=90)
+#     ax9.axis('equal')
+#     st.pyplot(fig9)
+
+# with col10:
+#     st.subheader("🎯 Répartition des assists donnees par 90 mins — 2025")
+#     fig10, ax10 = plt.subplots()
+#     ax10.pie(assists_per_90_minutes_2025, labels=joueurs_assists_per_90_minutes_2025, explode=[explode_small]*len(joueurs_assists_per_90_minutes_2025),
+#             autopct='%1.1f%%', shadow=True, startangle=90)
+#     ax10.axis('equal')
+#     st.pyplot(fig10)
