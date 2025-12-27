@@ -420,3 +420,6 @@ docker run --rm -v "$(pwd -W)/data:/app/data" barca-scraper
 ## Ca marche
 <img width="1552" height="562" alt="image" src="https://github.com/user-attachments/assets/cfa4fae0-63a6-47ec-8258-83af3d96dbe2" />
 
+
+# Pbs
+La structure de la source a évolué, rendant le code de scraping existant obsolète et empêchant la récupération correcte des données.
